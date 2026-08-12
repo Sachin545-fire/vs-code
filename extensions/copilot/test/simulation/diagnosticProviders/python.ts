@@ -157,7 +157,7 @@ async function doIsValidPythonFile(text: string): Promise<boolean> {
 	await promisify(fs.mkdir)(dir, { recursive: true });
 	await promisify(fs.writeFile)(tmpFile, text);
 	return new Promise<boolean>((resolve) => {
-		cp.exec(`python3 -m py_compile "${tmpFile}"`, (error, stdout, stderr) => {
+		cp.execFile('python3', ['-m', 'py_compile', tmpFile], (error, stdout, stderr) => {
 			if (error) {
 				return resolve(false);
 			} else if (stderr && stderr.length > 0) {
@@ -192,7 +192,7 @@ async function canExecutePythonCodeWithoutErrorsImpl(text: string): Promise<bool
 	await promisify(fs.mkdir)(dir, { recursive: true });
 	await promisify(fs.writeFile)(tmpFile, text);
 	return new Promise<boolean>((resolve) => {
-		cp.exec(`python3 "${tmpFile}"`, (error, stdout, stderr) => {
+		cp.execFile('python3', [tmpFile], (error, stdout, stderr) => {
 			if (error) {
 				return resolve(false);
 			} else if (stderr && stderr.length > 0) {

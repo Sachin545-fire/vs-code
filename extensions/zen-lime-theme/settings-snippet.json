@@ -246,10 +246,9 @@
   "zenMode.fullScreen": true,
   "zenMode.centerLayout": true,
   "zenMode.showTabs": "multiple",
-  "zenMode.showStatusBar": false,
-  "zenMode.showActivityBar": false,
-  "zenMode.showLineNumbers": true,
-  "zenMode.showMinimap": false,
+  "zenMode.hideStatusBar": true,
+  "zenMode.hideActivityBar": true,
+  "zenMode.hideLineNumbers": false,
   "zenMode.restore": true,
   "zenMode.silentNotifications": true,
 

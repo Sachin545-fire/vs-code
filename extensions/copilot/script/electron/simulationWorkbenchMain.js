@@ -23,8 +23,9 @@ function createWindow() {
 		width: width * 0.75,
 		height: height,
 		webPreferences: {
-			nodeIntegration: true,
-			contextIsolation: false
+			nodeIntegration: false,
+			contextIsolation: true,
+			sandbox: true
 		}
 	});
 	mainWindow.loadURL(`file://${__dirname}/simulationWorkbench.html`);
@@ -133,7 +134,9 @@ function registerListeners() {
 	});
 
 	electron.ipcMain.on('open-link', (_event, url) => {
-		electron.shell.openExternal(url);
+		if (url.startsWith('http://') || url.startsWith('https://')) {
+			electron.shell.openExternal(url);
+		}
 	});
 
 	electron.ipcMain.handle('processArgv', () => {

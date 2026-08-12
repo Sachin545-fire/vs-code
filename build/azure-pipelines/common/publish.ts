@@ -280,8 +280,9 @@ function getThumbprint(input: string, algorithm: string): Buffer {
 }
 
 function getKeyFromPFX(pfx: string): string {
-	const pfxCertificatePath = path.join(os.tmpdir(), 'cert.pfx');
-	const pemKeyPath = path.join(os.tmpdir(), 'key.pem');
+	const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'cert-'));
+	const pfxCertificatePath = path.join(dir, 'cert.pfx');
+	const pemKeyPath = path.join(dir, 'key.pem');
 
 	try {
 		const pfxCertificate = Buffer.from(pfx, 'base64');
@@ -291,14 +292,14 @@ function getKeyFromPFX(pfx: string): string {
 		const result = raw.match(/-----BEGIN PRIVATE KEY-----[\s\S]+?-----END PRIVATE KEY-----/g)![0];
 		return result;
 	} finally {
-		fs.rmSync(pfxCertificatePath, { force: true });
-		fs.rmSync(pemKeyPath, { force: true });
+		fs.rmSync(dir, { recursive: true, force: true });
 	}
 }
 
 function getCertificatesFromPFX(pfx: string): string[] {
-	const pfxCertificatePath = path.join(os.tmpdir(), 'cert.pfx');
-	const pemCertificatePath = path.join(os.tmpdir(), 'cert.pem');
+	const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'cert-'));
+	const pfxCertificatePath = path.join(dir, 'cert.pfx');
+	const pemCertificatePath = path.join(dir, 'cert.pem');
 
 	try {
 		const pfxCertificate = Buffer.from(pfx, 'base64');
@@ -308,8 +309,7 @@ function getCertificatesFromPFX(pfx: string): string[] {
 		const matches = raw.match(/-----BEGIN CERTIFICATE-----[\s\S]+?-----END CERTIFICATE-----/g);
 		return matches ? matches.reverse() : [];
 	} finally {
-		fs.rmSync(pfxCertificatePath, { force: true });
-		fs.rmSync(pemCertificatePath, { force: true });
+		fs.rmSync(dir, { recursive: true, force: true });
 	}
 }
 

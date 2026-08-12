@@ -35,26 +35,6 @@ import {
 export const NVIDIA_NIM_API_KEY_STORAGE_KEY = 'nvidiaNim.apiKey';
 
 /**
- * ⚠️  SECURITY WARNING  ⚠️
- *
- * Hardcoded fallback API key for development / personal use. This key is
- * embedded in the binary — anyone with access to your custom VS Code build
- * can extract it. Treat this as a "convenience default" only.
- *
- * Usage policy (enforced in {@link getApiKey} below):
- *   1. If a key has been set via the `nvidiaNim.setApiKey` command (stored
- *      in secret storage), that key ALWAYS takes precedence.
- *   2. Otherwise, this hardcoded fallback is used.
- *
- * To rotate: run `nvidiaNim.setApiKey` with a new key — the new key will
- * override this fallback immediately, no recompile needed.
- *
- * To permanently remove this fallback from a build, delete this constant
- * and the fallback branch in {@link getApiKey}.
- */
-export const NVIDIA_NIM_FALLBACK_API_KEY = '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';
-
-/**
  * Configuration keys — all under the `nvidiaNim` namespace in settings.json.
  */
 export const NvidiaNimConfigKeys = {
@@ -335,10 +315,6 @@ export class NvidiaNimLanguageModelProvider
             return apiKey;
         }
         
-        // 2. Fall back to the hardcoded key baked into this build.
-        if (NVIDIA_NIM_FALLBACK_API_KEY) {
-            return NVIDIA_NIM_FALLBACK_API_KEY;
-        }
         return undefined;
     }
 

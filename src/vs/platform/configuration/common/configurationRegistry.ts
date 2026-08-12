@@ -16,7 +16,7 @@ import { IPolicy, IPolicyReference, PolicyName } from '../../../base/common/poli
 import { Disposable } from '../../../base/common/lifecycle.js';
 import product from '../../product/common/product.js';
 
-const ZenCodeDefaults: Record<string, any> = {
+const ZenCodeDefaults: Record<string, unknown> = {
   "editor.fontSize": 14,
   "editor.lineHeight": 22,
   "editor.fontFamily": "'Cascadia Code', 'Fira Code', 'JetBrains Mono', Consolas, monospace",
@@ -952,8 +952,8 @@ class ConfigurationRegistry extends Disposable implements IConfigurationRegistry
 
 				// update default value
 				property.defaultDefaultValue = properties[key].default;
-				if (ZenCodeDefaults.hasOwnProperty(key)) {
-					property.defaultDefaultValue = (ZenCodeDefaults as any)[key];
+				if (key in ZenCodeDefaults) {
+					property.defaultDefaultValue = (ZenCodeDefaults as Record<string, unknown>)[key];
 					properties[key].default = property.defaultDefaultValue;
 				}
 				this.updatePropertyDefaultValue(key, property);

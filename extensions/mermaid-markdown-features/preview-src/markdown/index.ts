@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+import DOMPurify from 'dompurify';
 import mermaid, { MermaidConfig } from 'mermaid';
 import { buildMermaidConfig, loadExtensionConfig, registerMermaidAddons, renderMermaidBlocksInElement } from '../shared';
 import { DiagramManager } from '../shared/diagramManager';
@@ -41,7 +42,7 @@ async function init() {
 
 	const activeIds = new Set<string>();
 	await renderMermaidBlocksInElement(document.body, (mermaidContainer, content, _contentHash, isError) => {
-		mermaidContainer.innerHTML = content;
+		mermaidContainer.innerHTML = DOMPurify.sanitize(content);
 		if (isError) {
 			return;
 		}

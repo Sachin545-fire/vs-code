@@ -323,9 +323,7 @@ export class LocalTranscriptionService extends Disposable implements ILocalTrans
 	 */
 	private _applyProxyEnv(proxyUrl: string | undefined, noProxy: string | undefined, proxyStrictSSL: boolean | undefined, proxyAuthorization: string | undefined): void {
 		if (proxyStrictSSL === false) {
-			// Covers both Node legs uniformly (our fetch and the SDK's bare
-			// `https.get` NuGet install); scoped to this dedicated utility process.
-			process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+			// (Removed global NODE_TLS_REJECT_UNAUTHORIZED assignment for security reasons)
 		}
 		if (!proxyUrl) {
 			return;
