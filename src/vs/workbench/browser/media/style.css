@@ -1,0 +1,741 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+/* Font Crispness & Sharpness Enhancement */
+.monaco-editor, .monaco-workbench {
+	-webkit-font-smoothing: antialiased !important;
+	-moz-osx-font-smoothing: grayscale !important;
+	text-rendering: optimizeLegibility !important;
+}
+
+/* Animations */
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* Font Families (with CJK support) */
+
+.monaco-workbench.mac { font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+.monaco-workbench.mac:lang(zh-Hans) { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", sans-serif; }
+.monaco-workbench.mac:lang(zh-Hant) { font-family: -apple-system, BlinkMacSystemFont, "PingFang TC", sans-serif; }
+.monaco-workbench.mac:lang(ja) { font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic Pro", sans-serif; }
+.monaco-workbench.mac:lang(ko) { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Nanum Gothic", "AppleGothic", sans-serif; }
+
+.monaco-workbench.windows { font-family: "Segoe WPC", "Segoe UI", sans-serif; }
+.monaco-workbench.windows:lang(zh-Hans) { font-family: "Segoe WPC", "Segoe UI", "Microsoft YaHei", sans-serif; }
+.monaco-workbench.windows:lang(zh-Hant) { font-family: "Segoe WPC", "Segoe UI", "Microsoft Jhenghei", sans-serif; }
+.monaco-workbench.windows:lang(ja) { font-family: "Segoe WPC", "Segoe UI", "Yu Gothic UI", "Meiryo UI", sans-serif; }
+.monaco-workbench.windows:lang(ko) { font-family: "Segoe WPC", "Segoe UI", "Malgun Gothic", "Dotom", sans-serif; }
+
+/* Linux: add `system-ui` as first font and not `Ubuntu` to allow other distribution pick their standard OS font */
+.monaco-workbench.linux { font-family: system-ui, "Ubuntu", "Droid Sans", sans-serif; }
+.monaco-workbench.linux:lang(zh-Hans) { font-family: system-ui, "Ubuntu", "Droid Sans", "Source Han Sans SC", "Source Han Sans CN", "Source Han Sans", sans-serif; }
+.monaco-workbench.linux:lang(zh-Hant) { font-family: system-ui, "Ubuntu", "Droid Sans", "Source Han Sans TC", "Source Han Sans TW", "Source Han Sans", sans-serif; }
+.monaco-workbench.linux:lang(ja) { font-family: system-ui, "Ubuntu", "Droid Sans", "Source Han Sans J", "Source Han Sans JP", "Source Han Sans", sans-serif; }
+.monaco-workbench.linux:lang(ko) { font-family: system-ui, "Ubuntu", "Droid Sans", "Source Han Sans K", "Source Han Sans JR", "Source Han Sans", "UnDotum", "FBaekmuk Gulim", sans-serif; }
+
+.monaco-workbench.mac { --monaco-monospace-font: "SF Mono", Monaco, Menlo, Courier, monospace; }
+.monaco-workbench.windows { --monaco-monospace-font: Consolas, "Courier New", monospace; }
+.monaco-workbench.linux { --monaco-monospace-font: "Ubuntu Mono", "Liberation Mono", "DejaVu Sans Mono", "Courier New", monospace; }
+
+/* Global Styles */
+
+body {
+	height: 100%;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	font-size: 11px;
+	user-select: none;
+	-webkit-user-select: none;
+}
+
+.monaco-workbench {
+	font-size: 13px;
+	line-height: 1.55em;
+	position: relative;
+	inset: 0;
+	z-index: 1;
+	overflow: hidden;
+	color: var(--vscode-foreground);
+
+	/* Elevation shadows */
+	--vscode-shadow-sm: 0 0 2px rgba(0, 0, 0, 0.04);
+	--vscode-shadow-md: 0 0 4px rgba(0, 0, 0, 0.06);
+	--vscode-shadow-lg: 0 0 8px rgba(0, 0, 0, 0.08);
+	--vscode-shadow-xl: 0 0 12px rgba(0, 0, 0, 0.10);
+	--vscode-shadow-active-tab: 0 4px 8px rgba(0, 0, 0, 0.01);
+
+	/* Panel depth shadows cast onto the editor surface */
+	--vscode-shadow-depth-x: 3px 0 6px -3px rgba(0, 0, 0, 0.03);
+	--vscode-shadow-depth-y: 0 3px 6px -3px rgba(0, 0, 0, 0.02);
+}
+
+/* Disable panel/part shadows when the setting is off (preserves floating modals, notifications, etc.) */
+.monaco-workbench.no-shadows .part.titlebar,
+.monaco-workbench.no-shadows .part.activitybar,
+.monaco-workbench.no-shadows.nosidebar .part.activitybar,
+.monaco-workbench.no-shadows.activitybar-right .part.activitybar,
+.monaco-workbench.no-shadows .part.editor .tabs-container > .tab {
+	box-shadow: none;
+}
+.monaco-workbench.no-shadows .part.editor .tabs-container > .tab:hover:not(.active),
+.monaco-workbench.no-shadows .part.editor .tabs-container > .tab.active {
+	box-shadow: none;
+}
+.monaco-workbench.no-shadows {
+	/* Use zero-offset transparent shadows instead of 'none' because these
+	 * variables are interpolated into multi-value box-shadow declarations. */
+	--vscode-shadow-active-tab: 0 0 0 0 transparent;
+	--vscode-shadow-depth-x: 0 0 0 0 transparent;
+	--vscode-shadow-depth-y: 0 0 0 0 transparent;
+	--vscode-shadow-sm: 0 0 0 0 transparent;
+}
+
+.monaco-workbench.web {
+	touch-action: none; /* Disable browser handling of all panning and zooming gestures. Removes 300ms touch delay. */
+	overscroll-behavior: none; /* Prevent bounce effect */
+}
+
+.monaco-workbench.border:not(.fullscreen) {
+	box-sizing: border-box;
+	border: 1px solid var(--window-border-color);
+}
+
+.monaco-workbench.border.mac {
+	border-radius: 10px;
+}
+
+.monaco-workbench.border.mac.macos-tahoe {
+	border-radius: 16px; /* macOS Tahoe increased rounded corners size */
+}
+
+.monaco-workbench img {
+	border: 0;
+}
+
+.monaco-workbench label {
+	cursor: pointer;
+}
+
+.monaco-workbench a {
+	text-decoration: none;
+}
+
+
+.monaco-workbench p > a {
+	text-decoration: var(--text-link-decoration);
+}
+
+.monaco-workbench.underline-links {
+	--text-link-decoration: underline;
+}
+
+.monaco-workbench.hc-black p > a,
+.monaco-workbench.hc-light p > a {
+	text-decoration: underline !important;
+}
+
+.monaco-workbench a:active {
+	color: inherit;
+	background-color: inherit;
+}
+
+.monaco-workbench a.plain {
+	color: inherit;
+	text-decoration: none;
+}
+
+.monaco-workbench a.plain:hover,
+.monaco-workbench a.plain.hover {
+	color: inherit;
+	text-decoration: none;
+}
+
+.monaco-workbench input {
+	color: inherit;
+	font-family: inherit;
+	font-size: 100%;
+}
+
+.monaco-workbench table {
+	/*
+	 * Somehow this is required when tables show in floating windows
+	 * to override the user-agent style which sets a specific color
+	 * and font-size
+	 */
+	color: inherit;
+	font-size: inherit;
+}
+
+.monaco-workbench input::placeholder { color: var(--vscode-input-placeholderForeground); }
+.monaco-workbench input::-webkit-input-placeholder  { color: var(--vscode-input-placeholderForeground); }
+.monaco-workbench input::-moz-placeholder { color: var(--vscode-input-placeholderForeground); }
+
+.monaco-workbench textarea::placeholder { color: var(--vscode-input-placeholderForeground); }
+.monaco-workbench textarea::-webkit-input-placeholder { color: var(--vscode-input-placeholderForeground); }
+.monaco-workbench textarea::-moz-placeholder { color: var(--vscode-input-placeholderForeground); }
+
+.monaco-workbench .pointer {
+	cursor: pointer;
+}
+
+.monaco-workbench.mac.monaco-font-aliasing-antialiased {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.monaco-workbench.mac.monaco-font-aliasing-none {
+	-webkit-font-smoothing: none;
+	-moz-osx-font-smoothing: unset;
+}
+
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+	.monaco-workbench.mac.monaco-font-aliasing-auto {
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
+}
+
+.monaco-workbench .context-view {
+	-webkit-app-region: no-drag;
+}
+
+.monaco-workbench .codicon {
+	color: var(--vscode-icon-foreground);
+}
+
+.monaco-workbench .codicon[class*='codicon-'] {
+	font-size: 16px; /* sets font-size for codicons in workbench (https://github.com/microsoft/vscode/issues/98495) */
+}
+
+.monaco-workbench .predefined-file-icon[class*='codicon-']::before {
+	width: 16px;
+	padding-left: 3px; /* width (16px) - font-size (13px) = padding-left (3px) */
+	padding-right: 3px;
+}
+
+.predefined-file-icon::before { /* do add additional specificity to this selector, so it can be overridden by product themes */
+	font-family: 'codicon';
+}
+
+.monaco-workbench:not(.file-icons-enabled) .predefined-file-icon[class*='codicon-']::before {
+	content: unset !important;
+}
+
+.monaco-workbench.modal-dialog-visible .monaco-progress-container.infinite .progress-bit {
+	display: none; /* stop progress animations when dialogs are visible (https://github.com/microsoft/vscode/issues/138396) */
+}
+
+/* Custom Dropdown (select) Arrows */
+
+.monaco-workbench select {
+	font-family: inherit;
+	appearance: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	/* Hides inner border from FF */
+	border: 1px solid;
+}
+
+.monaco-workbench .select-container {
+	position: relative;
+}
+
+.monaco-workbench .select-container:after {
+	content: var(--vscode-icon-chevron-down-content);
+	font-family: var(--vscode-icon-chevron-down-font-family);
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+	line-height: 16px;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: 4px;
+	margin: auto;
+	pointer-events: none;
+}
+
+/* Keyboard Focus Indication Styles */
+
+.monaco-workbench [tabindex="0"]:focus,
+.monaco-workbench [tabindex="-1"]:focus,
+.monaco-workbench .synthetic-focus,
+.monaco-workbench select:focus,
+.monaco-workbench input[type="button"]:focus,
+.monaco-workbench input[type="text"]:focus,
+.monaco-workbench button:focus,
+.monaco-workbench textarea:focus,
+.monaco-workbench input[type="search"]:focus,
+.monaco-workbench input[type="checkbox"]:focus {
+	outline-width: 1px;
+	outline-style: solid;
+	outline-offset: -1px;
+	outline-color: var(--vscode-focusBorder);
+	opacity: 1;
+}
+
+.monaco-workbench.hc-black .synthetic-focus input,
+.monaco-workbench.hc-light .synthetic-focus input {
+	background: transparent; /* Search input focus fix when in high contrast */
+}
+
+.monaco-workbench input[type="checkbox"]:focus {
+	outline-offset: 2px;
+}
+
+.monaco-workbench [tabindex="0"]:active,
+.monaco-workbench [tabindex="-1"]:active,
+.monaco-workbench select:active,
+.monaco-workbench input[type="button"]:active,
+.monaco-workbench input[type="checkbox"]:active {
+	outline: 0 !important; /* fixes some flashing outlines from showing up when clicking */
+}
+
+.monaco-workbench.mac select:focus {
+	border-color: transparent; /* outline is a square, but border has a radius, so we avoid this glitch when focused (https://github.com/microsoft/vscode/issues/26045) */
+}
+
+.monaco-workbench.hc-black .monaco-list:not(.element-focused):not(:active):focus:before,
+.monaco-workbench.hc-light .monaco-list:not(.element-focused):not(:active):focus:before {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 15; /* make sure we are on top of the tree sticky scroll widget */
+	content: "";
+	pointer-events: none; /* enable click through */
+	outline: 1px solid; /* we still need to handle the empty tree or no focus item case */
+	outline-width: 1px;
+	outline-style: solid;
+	outline-offset: -1px;
+	outline-color: var(--vscode-focusBorder);
+}
+
+.monaco-workbench .monaco-list:not(:focus) .monaco-list-row.focused .monaco-highlighted-label .highlight,
+.monaco-workbench .monaco-list .monaco-list-row .monaco-highlighted-label .highlight {
+	color: var(--vscode-list-highlightForeground);
+}
+
+.monaco-workbench .monaco-list .monaco-list-row.focused .monaco-highlighted-label .highlight {
+	color: var(--vscode-list-focusHighlightForeground);
+}
+
+.monaco-workbench .synthetic-focus :focus {
+	outline: 0 !important; /* elements within widgets that draw synthetic-focus should never show focus */
+}
+
+.monaco-workbench .monaco-inputbox.info.synthetic-focus,
+.monaco-workbench .monaco-inputbox.warning.synthetic-focus,
+.monaco-workbench .monaco-inputbox.error.synthetic-focus,
+.monaco-workbench .monaco-inputbox.info input[type="text"]:focus,
+.monaco-workbench .monaco-inputbox.warning input[type="text"]:focus,
+.monaco-workbench .monaco-inputbox.error input[type="text"]:focus {
+	outline: 0 !important; /* outline is not going well with decoration */
+}
+
+.monaco-workbench .monaco-list:focus {
+	outline: 0 !important; /* tree indicates focus not via outline but through the focused item */
+}
+
+.monaco-workbench a.monaco-link:hover {
+	text-decoration: underline; /* render underline on hover for accessibility requirements */
+}
+
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-label:not(.disabled):hover,
+.monaco-workbench .monaco-action-bar:not(.vertical) .monaco-dropdown-with-primary:not(.disabled):hover {
+	background-color: var(--vscode-toolbar-hoverBackground);
+}
+
+
+.monaco-workbench select:active,
+.monaco-workbench input[type="button"]:active,
+.monaco-workbench input[type="checkbox"]:active {
+	outline: 0 !important; /* fixes some flashing outlines from showing up when clicking */
+}
+
+.monaco-workbench.mac select:focus {
+	border-color: transparent; /* outline is a square, but border has a radius, so we avoid this glitch when focused (https://github.com/microsoft/vscode/issues/26045) */
+}
+
+.monaco-workbench.hc-black .monaco-list:not(.element-focused):not(:active):focus:before,
+.monaco-workbench.hc-light .monaco-list:not(.element-focused):not(:active):focus:before {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 15; /* make sure we are on top of the tree sticky scroll widget */
+	content: "";
+	pointer-events: none; /* enable click through */
+	outline: 1px solid; /* we still need to handle the empty tree or no focus item case */
+	outline-width: 1px;
+	outline-style: solid;
+	outline-offset: -1px;
+	outline-color: var(--vscode-focusBorder);
+}
+
+.monaco-workbench .monaco-list:not(:focus) .monaco-list-row.focused .monaco-highlighted-label .highlight,
+.monaco-workbench .monaco-list .monaco-list-row .monaco-highlighted-label .highlight {
+	color: var(--vscode-list-highlightForeground);
+}
+
+.monaco-workbench .monaco-list .monaco-list-row.focused .monaco-highlighted-label .highlight {
+	color: var(--vscode-list-focusHighlightForeground);
+}
+
+.monaco-workbench .synthetic-focus :focus {
+	outline: 0 !important; /* elements within widgets that draw synthetic-focus should never show focus */
+}
+
+.monaco-workbench .monaco-inputbox.info.synthetic-focus,
+.monaco-workbench .monaco-inputbox.warning.synthetic-focus,
+.monaco-workbench .monaco-inputbox.error.synthetic-focus,
+.monaco-workbench .monaco-inputbox.info input[type="text"]:focus,
+.monaco-workbench .monaco-inputbox.warning input[type="text"]:focus,
+.monaco-workbench .monaco-inputbox.error input[type="text"]:focus {
+	outline: 0 !important; /* outline is not going well with decoration */
+}
+
+.monaco-workbench .monaco-list:focus {
+	outline: 0 !important; /* tree indicates focus not via outline but through the focused item */
+}
+
+.monaco-workbench a.monaco-link:hover {
+	text-decoration: underline; /* render underline on hover for accessibility requirements */
+}
+
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-label:not(.disabled):hover,
+.monaco-workbench .monaco-action-bar:not(.vertical) .monaco-dropdown-with-primary:not(.disabled):hover {
+	background-color: var(--vscode-toolbar-hoverBackground);
+}
+
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-item.active .action-label:not(.disabled),
+.monaco-workbench .monaco-action-bar:not(.vertical) .monaco-dropdown.active .action-label:not(.disabled) {
+	background-color: var(--vscode-toolbar-activeBackground);
+}
+
+
+/* =====================================================================
+ *  V9 MASTER LAYOUT (Unified & Bug-Free + Cyberpunk Immersion)
+ * ===================================================================== */
+
+/* 1. Global Typography & Ambient Background */
+/* Optimized for performance: Removed heavy background-position animation */
+.monaco-workbench .part.statusbar {
+	border-top: none !important;
+	background: rgba(12, 12, 16, 0.8) !important;
+	backdrop-filter: blur(12px) !important;
+	border-radius: 10px !important;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+	margin: 0 16px 8px 16px !important;
+	width: calc(100% - 32px) !important;
+}
+
+.monaco-workbench {
+	font-family: "Segoe UI Variable Text", "Segoe UI", -apple-system, BlinkMacSystemFont, system-ui, sans-serif !important;
+	-webkit-font-smoothing: antialiased !important;
+	background: radial-gradient(circle at 50% 50%, rgba(20, 35, 25, 0.3), rgba(12, 12, 14, 0.98)) !important;
+	background-size: cover !important;
+}
+
+/* 2. Seamless Floating UI Architecture (No Borders) */
+.monaco-workbench .part.editor,
+.monaco-workbench .part.sidebar,
+.monaco-workbench .part.activitybar,
+.monaco-workbench .part.panel {
+	border-color: transparent !important;
+}
+
+.monaco-workbench .part.sidebar {
+	background: rgba(12, 12, 16, 0.4) !important;
+	backdrop-filter: blur(16px) saturate(120%) !important;
+	border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+	box-shadow: 4px 0 24px rgba(0, 0, 0, 0.2) !important;
+	z-index: 10 !important;
+}
+
+.monaco-workbench .part.editor {
+	background: rgba(8, 8, 12, 0.6) !important;
+	border-radius: 12px 0 0 12px !important;
+	box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.03), -4px 0 16px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* 3. Floating Pill-Shaped Tabs */
+.monaco-workbench .part.editor .tabs-container > .tab {
+	margin: 4px 0 !important;
+	border-radius: 8px !important;
+	border: 1px solid transparent !important;
+	border-top: none !important;
+	border-bottom: none !important;
+	height: calc(100% - 8px) !important;
+	opacity: 0.6;
+	background: transparent !important;
+	transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+}
+.monaco-workbench .part.editor .tabs-container > .tab.active {
+	opacity: 1 !important;
+	background: rgba(163, 230, 53, 0.1) !important;
+	border: 1px solid rgba(163, 230, 53, 0.4) !important;
+	font-weight: 600 !important;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+/* Style Tab Text */
+.monaco-workbench .part.editor .tabs-container > .tab .label-name {
+	font-weight: 600 !important;
+	letter-spacing: 0.2px !important;
+}
+.monaco-workbench .part.editor .tabs-container > .tab .label-description {
+	opacity: 0.6 !important;
+	font-size: 0.9em !important;
+	font-style: normal !important;
+}
+.monaco-workbench .part.editor .tabs-container > .tab::before,
+.monaco-workbench .part.editor .tabs-container > .tab::after,
+.monaco-workbench .part.editor .tabs-container > .tab.active::before,
+.monaco-workbench .part.editor .tabs-container > .tab.active::after {
+	display: none !important;
+}
+
+/* 4. Glassmorphism Widgets (Command Palette, Find, Hover, Hints) */
+.monaco-workbench .quick-input-widget,
+.monaco-editor .editor-widget.find-widget,
+.monaco-editor .monaco-hover,
+.monaco-editor .parameter-hints-widget,
+.monaco-editor .sticky-widget {
+	border-radius: 16px !important;
+	backdrop-filter: blur(12px) saturate(150%) !important;
+	background-color: rgba(25, 25, 25, 0.8) !important;
+	border: 1px solid rgba(255, 255, 255, 0.08) !important;
+	box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4) !important;
+	overflow: hidden !important;
+}
+
+/* Command Palette Specific */
+.monaco-workbench .quick-input-widget {
+	top: 15% !important;
+	width: 800px !important;
+	margin-left: -400px !important;
+	padding: 12px !important;
+	left: 50% !important;
+	animation: slideDownFade 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+}
+.monaco-workbench .quick-input-widget .monaco-inputbox {
+	font-size: 1.25em !important;
+	padding: 16px !important;
+	border-radius: 12px !important;
+	background: rgba(255, 255, 255, 0.05) !important;
+	border: none !important;
+}
+
+/* 5. Smooth Scrollbars */
+.monaco-scrollable-element > .scrollbar > .slider {
+	width: 6px !important;
+	border-radius: 6px !important;
+	opacity: 0.2 !important;
+	transition: width 0.2s ease, opacity 0.2s ease, background-color 0.2s ease !important;
+}
+.monaco-scrollable-element:hover > .scrollbar > .slider,
+.monaco-scrollable-element > .scrollbar > .slider.active {
+	width: 10px !important;
+	opacity: 0.8 !important;
+	background-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* 6. Code Editor & Neon Token Lighting */
+.monaco-editor {
+	letter-spacing: 0.3px !important;
+}
+@keyframes cursorPulse {
+	0% { box-shadow: 0 0 8px var(--vscode-editorCursor-foreground), 0 0 12px var(--vscode-editorCursor-foreground); }
+	50% { box-shadow: 0 0 16px var(--vscode-editorCursor-foreground), 0 0 24px var(--vscode-editorCursor-foreground); opacity: 1; }
+	100% { box-shadow: 0 0 8px var(--vscode-editorCursor-foreground), 0 0 12px var(--vscode-editorCursor-foreground); }
+}
+.monaco-editor .cursor {
+	animation: cursorPulse 2.5s infinite ease-in-out !important;
+	border-radius: 2px !important;
+}
+.monaco-editor .current-line {
+	border: none !important;
+	background: linear-gradient(90deg, rgba(255, 255, 255, 0.04) 0%, transparent 100%) !important;
+	box-shadow: inset 3px 0 0 var(--vscode-editorCursor-foreground) !important;
+}
+.monaco-editor .selected-text { border-radius: 4px !important; }
+.monaco-editor .bracket-match {
+	box-shadow: 0 0 8px var(--vscode-editorBracketMatch-border) !important;
+	border-radius: 4px !important;
+	border: 1px solid var(--vscode-editorBracketMatch-border) !important;
+	transition: all 0.15s ease-out !important;
+}
+.monaco-editor .squiggly-error { filter: drop-shadow(0 2px 4px rgba(244, 63, 94, 0.6)) !important; }
+.monaco-editor .squiggly-warning { filter: drop-shadow(0 2px 4px rgba(234, 179, 8, 0.6)) !important; }
+
+/* Subtle Neon Syntax Lighting */
+.monaco-editor .mtk1 { text-shadow: 0 0 2px rgba(255, 255, 255, 0.15); }
+.monaco-editor .mtk6, .monaco-editor .mtk8 {
+	text-shadow: 0 0 6px rgba(163, 230, 53, 0.35) !important; /* Accent Green Glow */
+}
+.monaco-editor .mtk5 {
+	text-shadow: 0 0 6px rgba(103, 232, 249, 0.3) !important; /* Cyan String Glow */
+}
+.monaco-editor .mtk4 {
+	text-shadow: 0 0 6px rgba(251, 113, 133, 0.3) !important; /* Rose Function Glow */
+}
+
+/* Futuristic HUD Autocomplete Suggest Widget */
+.monaco-editor .suggest-widget {
+	border-radius: 14px !important;
+	backdrop-filter: blur(12px) saturate(160%) !important;
+	background-color: rgba(18, 18, 22, 0.85) !important;
+	border: 1px solid rgba(163, 230, 53, 0.25) !important;
+	box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 20px rgba(163, 230, 53, 0.15) !important;
+	padding: 6px !important;
+}
+.monaco-editor .suggest-widget .monaco-list-row {
+	border-radius: 8px !important;
+	margin: 2px 0 !important;
+}
+.monaco-editor .suggest-widget .monaco-list-row.focused {
+	background-color: rgba(163, 230, 53, 0.15) !important;
+	border: 1px solid rgba(163, 230, 53, 0.4) !important;
+}
+
+.monaco-editor .minimap {
+	opacity: 0.2 !important;
+	transition: opacity 0.25s ease-in-out !important;
+}
+.monaco-editor .minimap:hover { opacity: 1 !important; }
+
+/* 7. Tactile Buttons & Hover States */
+.monaco-workbench .monaco-button,
+.monaco-workbench .monaco-action-bar .action-item {
+	border-radius: 6px !important;
+	transition: background-color 0.15s ease, opacity 0.15s ease, transform 0.1s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.monaco-workbench .monaco-button:active,
+.monaco-workbench .monaco-action-bar .action-item:active {
+	transform: scale(0.94) !important;
+}
+.monaco-workbench .monaco-list-row,
+.monaco-workbench .quick-input-list-row {
+	transition: background-color 0.15s ease-out, transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+}
+
+/* 8. Minimalist Overrides */
+.monaco-workbench .part.editor .editor-group-watermark {
+	display: none !important;
+}
+.monaco-workbench .sash {
+	opacity: 0 !important;
+	transition: opacity 0.2s ease;
+}
+.monaco-workbench .sash:hover, .monaco-workbench .sash.active {
+	opacity: 1 !important;
+	background: rgba(163, 230, 53, 0.3) !important;
+}
+
+/* Animations */
+@keyframes slideDownFade {
+	from { opacity: 0; transform: translateY(-20px) scale(0.98); }
+	to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* 9. Futuristic Glassmorphism Terminal & Neon Prompt */
+.monaco-workbench .part.panel {
+	background-color: rgba(16, 16, 20, 0.75) !important;
+	backdrop-filter: blur(12px) saturate(140%) !important;
+	border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+	box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.2) !important;
+}
+.monaco-workbench .pane-body.integrated-terminal {
+	background-color: transparent !important;
+}
+.monaco-workbench .terminal-outer-container .xterm-cursor {
+	box-shadow: 0 0 10px #a3e635, 0 0 18px #a3e635 !important;
+}
+.monaco-workbench .terminal-outer-container .xterm-selection div {
+	background-color: rgba(163, 230, 53, 0.25) !important;
+}
+
+/* 10. Glowing Codicons (Product & Activity Icons) */
+.monaco-workbench .activitybar .codicon:hover,
+.monaco-workbench .part.titlebar .codicon:hover,
+.monaco-workbench .part.statusbar .codicon:hover {
+	filter: drop-shadow(0 0 6px rgba(163, 230, 53, 0.6)) !important;
+	transition: filter 0.2s ease !important;
+}
+
+/* 11. Custom Floating Scrollbars */
+.monaco-workbench .invisible-scrollbar .scrollbar .slider {
+	background: rgba(255, 255, 255, 0.1) !important;
+	border-radius: 10px !important;
+}
+.monaco-workbench .invisible-scrollbar .scrollbar .slider:hover {
+	background: rgba(255, 255, 255, 0.2) !important;
+}
+.monaco-workbench .invisible-scrollbar .scrollbar .slider.active {
+	background: rgba(163, 230, 53, 0.4) !important;
+}
+
+/* 11. Cyberpunk / Glassmorphic Welcome Dashboard */
+.monaco-workbench .gettingStartedContainer {
+	background: transparent !important;
+}
+.monaco-workbench .gettingStartedContainer .gettingStarted {
+	border-radius: 20px !important;
+	background: rgba(20, 20, 25, 0.65) !important;
+	backdrop-filter: blur(16px) !important;
+	border: 1px solid rgba(255, 255, 255, 0.08) !important;
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
+	padding: 24px !important;
+}
+.monaco-workbench .gettingStartedContainer .card {
+	border-radius: 12px !important;
+	background: rgba(255, 255, 255, 0.03) !important;
+	border: 1px solid rgba(255, 255, 255, 0.06) !important;
+	transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+}
+.monaco-workbench .gettingStartedContainer .card:hover {
+	background: rgba(163, 230, 53, 0.08) !important;
+	border-color: rgba(163, 230, 53, 0.4) !important;
+	transform: translateY(-3px) scale(1.01) !important;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* 12. Glassmorphism AI Chat & Secondary Sidebar Bubbles */
+.monaco-workbench .part.sidebar.right {
+	border-left: none !important;
+	box-shadow: -4px 0 16px rgba(0, 0, 0, 0.15) !important;
+}
+.monaco-workbench .chat-list-row,
+.monaco-workbench .interactive-item-container {
+	border-radius: 14px !important;
+	margin: 6px 8px !important;
+	padding: 10px !important;
+	background: rgba(255, 255, 255, 0.025) !important;
+	border: 1px solid rgba(255, 255, 255, 0.05) !important;
+	transition: all 0.2s ease !important;
+}
+.monaco-workbench .chat-list-row:hover,
+.monaco-workbench .interactive-item-container:hover {
+	background: rgba(255, 255, 255, 0.04) !important;
+	border-color: rgba(163, 230, 53, 0.2) !important;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* 13. Status Bar Telemetry Badges */
+.monaco-workbench .part.statusbar .statusbar-item {
+	padding: 2px 8px !important;
+	margin: 0 2px !important;
+	border-radius: 6px !important;
+	transition: all 0.15s ease !important;
+}
+.monaco-workbench .part.statusbar .statusbar-item:hover {
+	background: rgba(163, 230, 53, 0.12) !important;
+	box-shadow: 0 0 8px rgba(163, 230, 53, 0.25) !important;
+}
+

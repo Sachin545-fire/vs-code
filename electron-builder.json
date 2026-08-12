@@ -1,0 +1,20 @@
+{
+  "appId": "com.vscode.oss",
+  "productName": "VSCode",
+  "directories": {
+    "output": "dist",
+    "buildResources": "resources"
+  },
+  "win": {
+    "target": [
+      "portable"
+    ]
+  },
+  "portable": {
+    "artifactName": "${productName}-${version}-standalone.exe"
+  }
+}
+
+
+
+

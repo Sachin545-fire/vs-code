@@ -1,0 +1,23 @@
+{
+	"name": "zen-keymap",
+	"displayName": "Zen Studio Keymap",
+	"description": "Default flow state keybindings for Zen Studio.",
+	"publisher": "vscode",
+	"categories": ["Keymaps"],
+	"version": "1.0.0",
+	"engines": {
+		"vscode": "^1.80.0"
+	},
+	"contributes": {
+		"keybindings": [
+			{
+				"key": "ctrl+alt+z",
+				"command": "workbench.action.toggleZenMode"
+			},
+			{
+				"key": "ctrl+shift+k",
+				"command": "workbench.action.terminal.toggleTerminal"
+			}
+		]
+	}
+}

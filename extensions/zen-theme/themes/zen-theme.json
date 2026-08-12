@@ -1,0 +1,45 @@
+{
+	"name": "Zen Studio Cyberpunk",
+	"type": "dark",
+	"colors": {
+		"editor.background": "#0c0c0e",
+		"editor.foreground": "#e2e8f0",
+		"activityBar.background": "#0c0c0e",
+		"sideBar.background": "#141419",
+		"terminal.background": "#101014a0",
+		"titleBar.activeBackground": "#0c0c0e",
+		"statusBar.background": "#0c0c0e",
+		"editorCursor.foreground": "#a3e635",
+		"editorBracketMatch.border": "#a3e635",
+		"tab.activeBackground": "#141419",
+		"tab.inactiveBackground": "#0c0c0e",
+		"tab.activeForeground": "#a3e635",
+		"tab.inactiveForeground": "#94a3b8",
+		"tab.activeBorder": "#transparent",
+		"tab.activeBorderTop": "#transparent",
+		"gitDecoration.modifiedResourceForeground": "#67e8f9",
+		"gitDecoration.untrackedResourceForeground": "#a3e635",
+		"gitDecoration.deletedResourceForeground": "#fb7185",
+		"focusBorder": "#a3e635"
+	},
+	"tokenColors": [
+		{
+			"scope": ["keyword", "storage"],
+			"settings": {
+				"foreground": "#a3e635"
+			}
+		},
+		{
+			"scope": ["string"],
+			"settings": {
+				"foreground": "#67e8f9"
+			}
+		},
+		{
+			"scope": ["entity.name.function", "support.function"],
+			"settings": {
+				"foreground": "#fb7185"
+			}
+		}
+	]
+}

@@ -1,0 +1,39 @@
+{
+  "name": "theme-zen-clean-modern",
+  "displayName": "Zen Clean Modern Themes",
+  "description": "Clean, aesthetic, modern themes inspired by Linear and Arc",
+  "version": "1.0.0",
+  "publisher": "vscode",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.0.0"
+  },
+  "contributes": {
+    "themes": [
+      {
+        "id": "Zen Clean Dark",
+        "label": "Zen Clean Dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/dark.json"
+      },
+      {
+        "id": "Zen Clean Sakura",
+        "label": "Zen Clean Sakura",
+        "uiTheme": "vs-dark",
+        "path": "./themes/sakura.json"
+      },
+      {
+        "id": "Zen Clean Tokyo",
+        "label": "Zen Clean Tokyo",
+        "uiTheme": "vs-dark",
+        "path": "./themes/tokyo.json"
+      },
+      {
+        "id": "Zen Clean Forest",
+        "label": "Zen Clean Forest",
+        "uiTheme": "vs-dark",
+        "path": "./themes/forest.json"
+      }
+    ]
+  }
+}

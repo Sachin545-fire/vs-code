@@ -1,0 +1,35 @@
+{
+  "name": "zen-ai",
+  "displayName": "Zen AI",
+  "description": "Zen Lime Custom AI Assistant",
+  "version": "1.0.0",
+  "publisher": "vscode",
+  "engines": {
+    "vscode": "^1.125.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:zenAi.analyzeCode"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "zenAi.analyzeCode",
+        "title": "Zen AI: Analyze Active Code"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "18.x",
+    "@types/vscode": "^1.70.0",
+    "typescript": "^5.0.0"
+  }
+}

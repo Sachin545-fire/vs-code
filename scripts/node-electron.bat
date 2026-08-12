@@ -1,0 +1,26 @@
+@echo off
+setlocal
+
+set ELECTRON_RUN_AS_NODE=1
+
+pushd %~dp0\..
+
+set "NAMESHORT="
+for /f "tokens=2 delims=:," %%a in ('findstr /R /C:"\"nameShort\":.*" product.json') do if not defined NAMESHORT set "NAMESHORT=%%~a"
+set NAMESHORT=%NAMESHORT: "=%
+set NAMESHORT=%NAMESHORT:"=%.exe
+set "CODE=.build\electron\%NAMESHORT%"
+if not exist "%CODE%" (
+	for %%e in (.build\electron\*.exe) do set "CODE=%%~e"
+)
+if not exist "%CODE%" (
+	echo Electron executable not found: %CODE% 1>&2
+	exit /b 1
+)
+
+"%CODE%" %*
+
+popd
+
+endlocal
+exit /b %errorlevel%
