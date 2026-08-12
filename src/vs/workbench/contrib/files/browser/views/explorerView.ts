@@ -800,12 +800,12 @@ export class ExplorerView extends ViewPane implements IExplorerView {
 					for (let i = 0; i < Math.min(input.length, 5); i++) {
 						try {
 							await this.tree.expand(input[i]);
-						} catch (e) { }
+						} catch (e) { console.error(e); }
 					}
 				}
 				// Reloaded or transitioned from an empty workspace, but only have a single folder in the workspace.
 				if (!previousInput && input.length === 1 && this.configurationService.getValue<IFilesConfiguration>().explorer.expandSingleFolderWorkspaces) {
-					await this.tree.expand(input[0]).catch(() => { });
+					await this.tree.expand(input[0]).catch((e) => { console.error(e); });
 				}
 				if (Array.isArray(previousInput)) {
 					const previousRoots = new ResourceMap<true>();
@@ -816,7 +816,7 @@ export class ExplorerView extends ViewPane implements IExplorerView {
 						if (!previousRoots.has(item.resource)) {
 							try {
 								await this.tree.expand(item);
-							} catch (e) { }
+							} catch (e) { console.error(e); }
 						}
 					}));
 				}

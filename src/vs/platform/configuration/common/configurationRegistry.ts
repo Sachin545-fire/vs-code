@@ -952,7 +952,7 @@ class ConfigurationRegistry extends Disposable implements IConfigurationRegistry
 
 				// update default value
 				property.defaultDefaultValue = properties[key].default;
-				if (key in ZenCodeDefaults) {
+				if (key in ZenCodeDefaults && process.env['ZEN_CODE_FORCE_DEFAULTS'] === '1') {
 					property.defaultDefaultValue = (ZenCodeDefaults as Record<string, unknown>)[key];
 					properties[key].default = property.defaultDefaultValue;
 				}

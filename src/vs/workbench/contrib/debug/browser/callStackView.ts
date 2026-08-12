@@ -215,6 +215,7 @@ export class CallStackView extends ViewPane {
 					this.autoExpandedSessions.add(session);
 				}
 			} catch (e) {
+				console.error(e);
 				// Ignore tree expand errors if element no longer present
 			}
 			if (this.selectionNeedsUpdate) {
@@ -430,7 +431,7 @@ export class CallStackView extends ViewPane {
 				} else {
 					this.tree.reveal(element);
 				}
-			} catch (e) { }
+			} catch (e) { console.error(e); }
 			finally {
 				this.ignoreSelectionChangedEvent = false;
 			}
@@ -449,10 +450,10 @@ export class CallStackView extends ViewPane {
 			// Ignore errors from this expansions because we are not aware if we rendered the threads and sessions or we hide them to declutter the view
 			try {
 				await expandTo(thread.session, this.tree);
-			} catch (e) { }
+			} catch (e) { console.error(e); }
 			try {
 				await this.tree.expand(thread);
-			} catch (e) { }
+			} catch (e) { console.error(e); }
 
 			const toReveal = stackFrame || session;
 			if (toReveal) {

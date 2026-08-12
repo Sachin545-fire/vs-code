@@ -12,7 +12,6 @@
 		"DISPLAY": "" // Allow the Dev Containers extension to set DISPLAY, post-create.sh will add it back in ~/.bashrc and ~/.zshrc if not set.
 	},
 	"overrideCommand": false,
-	"privileged": true,
 	"mounts": [
 		{
 			"source": "vscode-dev",

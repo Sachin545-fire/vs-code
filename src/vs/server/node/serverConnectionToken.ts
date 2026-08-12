@@ -105,7 +105,7 @@ export async function determineServerConnectionToken(args: ServerParsedArgs): Pr
 			if (connectionTokenRegex.test(connectionToken)) {
 				return connectionToken;
 			}
-		} catch (err) { }
+		} catch (err) { console.error(err); }
 
 		// No connection token found, generate one
 		const connectionToken = generateUuid();
@@ -113,7 +113,7 @@ export async function determineServerConnectionToken(args: ServerParsedArgs): Pr
 		try {
 			// Try to store it
 			await Promises.writeFile(storageLocation, connectionToken, { mode: 0o600 });
-		} catch (err) { }
+		} catch (err) { console.error(err); }
 
 		return connectionToken;
 	};
